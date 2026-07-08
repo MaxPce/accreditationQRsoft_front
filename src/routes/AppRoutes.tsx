@@ -4,6 +4,8 @@ import CompanySelectPage from "../pages/CompanySelectPage";
 import LoginPage from "../pages/LoginPage";
 import EventSelectPage from "../pages/EventSelectPage";
 import PanelPage from "../pages/PanelPage";
+import AlimentosPage from "../pages/modules/AlimentosPage";
+import VillaPage from "../pages/modules/VillaPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -21,10 +23,26 @@ export default function AppRoutes() {
         }
       />
       <Route
-        path="/panel/*"
+        path="/panel"
         element={
           <ProtectedRoute requiredStage="event_selected">
             <PanelPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/panel/alimentos"
+        element={
+          <ProtectedRoute requiredStage="event_selected">
+            <AlimentosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/panel/villa"
+        element={
+          <ProtectedRoute requiredStage="event_selected">
+            <VillaPage />
           </ProtectedRoute>
         }
       />
