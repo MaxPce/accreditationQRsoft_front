@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCompanies } from "../api/companies.api";
-import { Company } from "../types/company.types";
+import type { Company } from "../types/company.types";
+import { resolveImageUrl } from "../utils/media";
+
 
 export default function CompanySelectPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -19,7 +21,7 @@ export default function CompanySelectPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-6">
-      <h1 className="text-xl font-bold">Selecciona tu organización</h1>
+      <h1 className="text-xl font-bold">Selecciona la organización</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {companies.map((c) => (
           <button
@@ -27,8 +29,8 @@ export default function CompanySelectPage() {
             onClick={() => navigate(`/login/${c.idcompany}`, { state: c })}
             className="border rounded-lg p-4 flex flex-col items-center hover:shadow-md transition"
           >
-            {c.avatar && (
-              <img src={c.avatar} alt={c.name} className="h-16 object-contain mb-2" />
+            {resolveImageUrl(c.avatar) && (
+                <img src={resolveImageUrl(c.avatar)!} alt={c.name} className="h-16 object-contain mb-2" />
             )}
             <span className="text-sm text-center">{c.name}</span>
           </button>

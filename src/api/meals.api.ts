@@ -1,6 +1,6 @@
 // src/api/meals.api.ts
 import api from "./axios";
-import { MealsLookupResponse, MealType } from "../types/accreditation.types";
+import type { MealsLookupResponse, MealType } from "../types/accreditation.types";
 
 export async function lookupMealsByQr(qr: string): Promise<MealsLookupResponse> {
   const { data } = await api.get("/meals/lookup", { params: { qr } });

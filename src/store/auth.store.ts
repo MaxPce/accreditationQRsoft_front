@@ -1,8 +1,8 @@
 // src/store/auth.store.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Account, EventItem, Stage } from "../types/auth.types";
-import { Company } from "../types/company.types";
+import type { Account, EventItem, Stage } from "../types/auth.types";
+import type { Company } from "../types/company.types";
 
 interface AuthState {
   token: string | null;

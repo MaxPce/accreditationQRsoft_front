@@ -3,7 +3,7 @@ import { useState } from "react";
 import QrScannerInput from "../../components/QrScannerInput";
 import AccreditationCard from "../../components/AccreditationCard";
 import { lookupMealsByQr, lookupMealsByDocument, checkMeal } from "../../api/meals.api";
-import { Accreditation, MealType } from "../../types/accreditation.types";
+import type { Accreditation, MealType } from "../../types/accreditation.types";
 
 const DOC_TYPES = [
   { code: "1", label: "DNI" },

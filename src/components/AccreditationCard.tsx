@@ -1,5 +1,5 @@
 // src/components/AccreditationCard.tsx
-import { Accreditation } from "../types/accreditation.types";
+import type { Accreditation } from "../types/accreditation.types";
 import { getCountryName } from "../utils/country";
 
 export default function AccreditationCard({ accreditation }: { accreditation: Accreditation }) {

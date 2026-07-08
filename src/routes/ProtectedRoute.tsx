@@ -1,8 +1,8 @@
 // src/routes/ProtectedRoute.tsx
 import { Navigate } from "react-router-dom";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useAuthStore } from "../store/auth.store";
-import { Stage } from "../types/auth.types";
+import type { Stage } from "../types/auth.types";
 
 interface Props {
   children: ReactNode;

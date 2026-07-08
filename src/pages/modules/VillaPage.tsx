@@ -3,7 +3,7 @@ import { useState } from "react";
 import QrScannerInput from "../../components/QrScannerInput";
 import AccreditationCard from "../../components/AccreditationCard";
 import { lookupVillageByQr, lookupVillageByDocument, registerVillageEntry } from "../../api/village.api";
-import { Accreditation, Gate, VillageEntry } from "../../types/accreditation.types";
+import type { Accreditation, Gate, VillageEntry } from "../../types/accreditation.types";
 
 const DOC_TYPES = [
   { code: "1", label: "DNI" },

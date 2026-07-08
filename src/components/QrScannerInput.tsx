@@ -1,5 +1,6 @@
 // src/components/QrScannerInput.tsx
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 interface Props {
@@ -22,24 +23,25 @@ export default function QrScannerInput({ onResult, docTypeOptions }: Props) {
     scannerRef.current = scanner;
 
     scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          if (decodedText === lastScanRef.current) return;
-          lastScanRef.current = decodedText;
-          onResult({ type: "qr", qr: decodedText });
-          setTimeout(() => (lastScanRef.current = null), 2000);
-        }
-      )
-      .catch((err) => console.error("No se pudo iniciar la cámara", err));
+        .start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText) => {
+            if (decodedText === lastScanRef.current) return;
+            lastScanRef.current = decodedText;
+            onResult({ type: "qr", qr: decodedText });
+            setTimeout(() => (lastScanRef.current = null), 2000);
+            },
+            undefined  
+        )
+        .catch((err) => console.error("No se pudo iniciar la cámara", err));
 
     return () => {
       scanner.stop().then(() => scanner.clear()).catch(() => {});
     };
   }, [mode]);
 
-  const handleManualSubmit = (e: React.FormEvent) => {
+  const handleManualSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!docnumber) return;
     onResult({ type: "manual", doctype, docnumber });

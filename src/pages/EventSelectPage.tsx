@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchEvents } from "../api/events.api";
 import { selectEventRequest } from "../api/auth.api";
 import { useAuthStore } from "../store/auth.store";
-import { EventItem } from "../types/auth.types";
+import type { EventItem } from "../types/auth.types";
 
 export default function EventSelectPage() {
   const [events, setEvents] = useState<EventItem[]>([]);

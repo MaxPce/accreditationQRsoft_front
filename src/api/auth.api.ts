@@ -1,6 +1,6 @@
 // src/api/auth.api.ts
 import api from "./axios";
-import { LoginResponse, SelectEventResponse } from "../types/auth.types";
+import type { LoginResponse, SelectEventResponse } from "../types/auth.types";
 
 export async function loginRequest(payload: {
   idcompany: number;

@@ -1,6 +1,6 @@
 // src/api/village.api.ts
 import api from "./axios";
-import { Gate, VillageLookupResponse } from "../types/accreditation.types";
+import type { Gate, VillageLookupResponse } from "../types/accreditation.types";
 
 export async function lookupVillageByQr(qr: string): Promise<VillageLookupResponse> {
   const { data } = await api.get("/village/lookup", { params: { qr } });
