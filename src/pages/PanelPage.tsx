@@ -22,8 +22,14 @@ export default function PanelPage() {
     <div className="min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
+          <button
+            onClick={() => navigate("/events")}
+            className="text-sm text-gray-500 hover:text-gray-800 mb-2"
+          >
+            ← Volver
+          </button>
           <h1 className="text-lg font-bold">{event?.name}</h1>
-          <p className="text-sm text-gray-500">Staff: {account?.username}</p>
+          <p className="text-sm text-gray-500">{account?.username}</p>
         </div>
         <button onClick={handleLogout} className="text-sm text-red-600">Cerrar sesión</button>
       </div>
