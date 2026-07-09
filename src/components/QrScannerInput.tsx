@@ -1,6 +1,5 @@
 // src/components/QrScannerInput.tsx
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 interface Props {
@@ -12,32 +11,59 @@ export default function QrScannerInput({ onResult, docTypeOptions }: Props) {
   const [mode, setMode] = useState<"qr" | "manual">("qr");
   const [doctype, setDoctype] = useState(docTypeOptions[0]?.code ?? "");
   const [docnumber, setDocnumber] = useState("");
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const isRunningRef = useRef(false); // 👈 track si el scanner está activo
   const regionId = "qr-reader-region";
   const lastScanRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (mode !== "qr") return;
 
+    setCameraError(null);
     const scanner = new Html5Qrcode(regionId);
     scannerRef.current = scanner;
 
     scanner
-        .start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            (decodedText) => {
-            if (decodedText === lastScanRef.current) return;
-            lastScanRef.current = decodedText;
-            onResult({ type: "qr", qr: decodedText });
-            setTimeout(() => (lastScanRef.current = null), 2000);
-            },
-            undefined  
-        )
-        .catch((err) => console.error("No se pudo iniciar la cámara", err));
+      .start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          if (decodedText === lastScanRef.current) return;
+          lastScanRef.current = decodedText;
+          onResult({ type: "qr", qr: decodedText });
+          setTimeout(() => (lastScanRef.current = null), 2000);
+        },
+        undefined
+      )
+      .then(() => {
+        isRunningRef.current = true; // 👈 solo marcar como activo si arrancó bien
+      })
+      .catch((err) => {
+        isRunningRef.current = false;
+        const msg = err?.message || String(err);
+        if (msg.includes("not supported") || msg.includes("getUserMedia")) {
+          setCameraError("La cámara no está disponible. Usa HTTPS o localhost, o ingresa el documento manualmente.");
+        } else {
+          setCameraError("No se pudo iniciar la cámara: " + msg);
+        }
+      });
 
     return () => {
-      scanner.stop().then(() => scanner.clear()).catch(() => {});
+      // 👈 solo detener si realmente está corriendo
+      if (isRunningRef.current) {
+        scanner
+          .stop()
+          .then(() => {
+            scanner.clear();
+            isRunningRef.current = false;
+          })
+          .catch(() => {
+            isRunningRef.current = false;
+          });
+      } else {
+        try { scanner.clear(); } catch (_) {}
+      }
     };
   }, [mode]);
 
@@ -65,7 +91,17 @@ export default function QrScannerInput({ onResult, docTypeOptions }: Props) {
         </button>
       </div>
 
-      {mode === "qr" && <div id={regionId} className="w-full max-w-sm mx-auto" />}
+      {mode === "qr" && (
+        <>
+          {cameraError ? (
+            <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
+              ⚠️ {cameraError}
+            </div>
+          ) : (
+            <div id={regionId} className="w-full max-w-sm mx-auto" />
+          )}
+        </>
+      )}
 
       {mode === "manual" && (
         <form onSubmit={handleManualSubmit} className="flex flex-col gap-3">
