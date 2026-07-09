@@ -42,3 +42,18 @@ export interface VillageLookupResponse {
   accreditation: Accreditation;
   entriesToday: VillageEntry[];
 }
+
+export type MobilityLocation = "videna" | "villa_panamericana";
+export type MobilityEventType = "salida" | "llegada";
+
+export interface MobilityLog {
+  location: MobilityLocation;
+  event_type: MobilityEventType;
+  scanned_at: string;
+}
+
+export interface MobilityLookupResponse {
+  ok: boolean;
+  accreditation: Accreditation;
+  logsToday: MobilityLog[];
+}

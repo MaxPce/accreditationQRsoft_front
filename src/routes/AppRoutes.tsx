@@ -6,6 +6,7 @@ import EventSelectPage from "../pages/EventSelectPage";
 import PanelPage from "../pages/PanelPage";
 import AlimentosPage from "../pages/modules/AlimentosPage";
 import VillaPage from "../pages/modules/VillaPage";
+import MovilidadPage from "../pages/modules/MovilidadPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -43,6 +44,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute requiredStage="event_selected">
             <VillaPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/panel/movilidad"
+        element={
+          <ProtectedRoute requiredStage="event_selected">
+            <MovilidadPage />
           </ProtectedRoute>
         }
       />
