@@ -23,3 +23,19 @@ export async function registerMobilityLog(
   const { data } = await api.post("/mobility/register", { idacreditation, location, event_type });
   return data;
 }
+
+export interface MobilityHistoryRecord {
+  idacreditation: number;
+  location:       string;
+  event_type:     string;
+  scanned_at:     string;
+  person: { fullname: string; docnumber: string; doctypeName: string };
+  role:   { code: string; name: string };
+}
+
+export async function getMobilityHistory(
+  filters: Record<string, string> = {}
+): Promise<MobilityHistoryRecord[]> {
+  const { data } = await api.get("/mobility/history", { params: filters });
+  return data.records;
+}

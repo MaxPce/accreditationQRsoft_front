@@ -19,3 +19,19 @@ export async function checkMeal(idacreditation: number, mealType: MealType) {
   const { data } = await api.post("/meals/check", { idacreditation, mealType });
   return data;
 }
+
+export interface MealHistoryRecord {
+  idacreditation: number;
+  meal_type:      string;
+  meal_date:      string;
+  scanned_at:     string;
+  person: { fullname: string; docnumber: string; doctypeName: string };
+  role:   { code: string; name: string };
+}
+
+export async function getMealsHistory(
+  filters: Record<string, string> = {}
+): Promise<MealHistoryRecord[]> {
+  const { data } = await api.get("/meals/history", { params: filters });
+  return data.records;
+}

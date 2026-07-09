@@ -8,6 +8,7 @@ import AlimentosPage from "../pages/modules/AlimentosPage";
 import VillaPage from "../pages/modules/VillaPage";
 import MovilidadPage from "../pages/modules/MovilidadPage";
 import ProtectedRoute from "./ProtectedRoute";
+import CompetenciaPage from "../pages/modules/CompetenciaPage";
 
 export default function AppRoutes() {
   return (
@@ -52,6 +53,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute requiredStage="event_selected">
             <MovilidadPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/panel/competencia"
+        element={
+          <ProtectedRoute requiredStage="event_selected">
+            <CompetenciaPage />
           </ProtectedRoute>
         }
       />
