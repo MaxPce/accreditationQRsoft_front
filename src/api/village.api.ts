@@ -20,6 +20,20 @@ export interface CountryOption {
   name: string;            
 }
 
+export interface VillageHistoryRecord {
+  idacreditation: number;
+  gate:           string | null;
+  idbuilding:     string | null;
+  building_name:  string | null;
+  scanned_at:     string;
+  person: {
+    fullname:  string;
+    docnumber: string;
+  };
+  role:         { code: string; name: string };
+  country_name: string | null;
+}
+
 
 export async function lookupVillageByQr(qr: string): Promise<VillageLookupResponse> {
   const { data } = await api.get("/village/lookup", { params: { qr } });
@@ -70,4 +84,11 @@ export async function removeCountryFromBuilding(idbuilding: string, idcountry: s
 export async function listAllCountries(): Promise<CountryOption[]> {
   const { data } = await api.get("/village/countries"); 
   return data.countries;
+}
+
+export async function getVillageHistory(
+  filters: Record<string, string>
+): Promise<VillageHistoryRecord[]> {
+  const { data } = await api.get("/village/history", { params: filters });
+  return data.records;
 }

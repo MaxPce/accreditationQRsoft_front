@@ -4,13 +4,17 @@ import { listBuildings, type VillageBuilding } from "../../api/village.api";
 import VillaScannerPanel  from "../../components/villa/VillaScannerPanel";
 import VillaEdificiosPanel from "../../components/villa/VillaEdificiosPanel";
 import VillaPaisesPanel   from "../../components/villa/VillaPaisesPanel";
+import VillaHistorialPanel from "../../components/villa/VillaHistorialPanel";
 
-type MainTab = "scanner" | "edificios" | "paises";
+
+type MainTab = "scanner" | "edificios" | "paises" | "historial";
+
 
 const TABS: { key: MainTab; label: string }[] = [
   { key: "scanner",   label: "📷 Escáner"  },
   { key: "edificios", label: "🏢 Edificios" },
   { key: "paises",    label: "🌎 Países"    },
+  { key: "historial", label: "📋 Historial" },
 ];
 
 export default function VillaPage() {
@@ -45,6 +49,7 @@ export default function VillaPage() {
       {mainTab === "scanner"   && <VillaScannerPanel   buildings={buildings} />}
       {mainTab === "edificios" && <VillaEdificiosPanel buildings={buildings} />}
       {mainTab === "paises"    && <VillaPaisesPanel    buildings={buildings} />}
+      {mainTab === "historial" && <VillaHistorialPanel buildings={buildings} />}
 
     </div>
   );
