@@ -64,3 +64,8 @@ export interface MobilityLookupResponse {
   logsToday: MobilityLog[];
 }
 
+export interface VillageEntry {
+  gate: Gate;
+  idbuilding?: string | null;
+  scanned_at: string;
+}
