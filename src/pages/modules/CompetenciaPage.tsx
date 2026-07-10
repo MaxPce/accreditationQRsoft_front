@@ -65,9 +65,9 @@ const renderCompetitionRow = (r: CompetitionHistoryRecord, i: number) => (
     <p className="text-gray-500">
       {r.person.doctypeName}: {r.person.docnumber}
     </p>
-    {r.categories && (
-      <p className="text-gray-400 text-xs">Prueba: {r.categories}</p>
-    )}
+    <p className="text-gray-400 text-xs">
+      {r.test_name ?? "Solo deporte"}
+    </p>
     <p className="text-gray-400 text-xs">
       {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
     </p>

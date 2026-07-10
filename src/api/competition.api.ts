@@ -27,9 +27,10 @@ export interface CompetitionHistoryRecord {
   id:             number;
   idacreditation: number;
   idsport:        number;
+  idtest:         string | null;   
   sport_name:     string;
   sport_acronym:  string;
-  categories:     string;
+  test_name:      string | null;   
   scanned_at:     string;
   person: {
     fullname:    string;
