@@ -152,13 +152,9 @@ export default function VillaScannerPanel({ buildings }: Props) {
               <p className="font-semibold mb-1">Ingresos de hoy:</p>
               {entriesToday.map((e, i) => (
                 <p key={i}>
-                  {GATE_LABELS[e.gate]}
-                  {e.idbuilding &&
-                    ` — ${buildings.find((b) => b.idbuilding === e.idbuilding)?.name_es ?? e.idbuilding}`}
-                  {" — "}
-                  {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
+                    {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
                 </p>
-              ))}
+                ))}
             </div>
           )}
         </>

@@ -36,12 +36,12 @@ export async function lookupVillageByDocument(
 
 export async function registerVillageEntry(
   idacreditation: number,
-  gate: Gate,
+  gate: Gate | null,        
   idbuilding?: string
 ) {
   const { data } = await api.post("/village/register", {
     idacreditation,
-    gate,
+    gate,                   
     ...(idbuilding ? { idbuilding } : {}),
   });
   return data;

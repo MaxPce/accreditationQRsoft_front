@@ -8,18 +8,13 @@ import {
   registerVillageEntry,
   type VillageBuilding,
 } from "../../api/village.api";
-import type { Accreditation, Gate, VillageEntry } from "../../types/accreditation.types";
+import type { Accreditation, VillageEntry } from "../../types/accreditation.types";
 
 const DOC_TYPES = [
   { code: "1", label: "DNI" },
   { code: "2", label: "Carnet de Ext." },
   { code: "3", label: "Pasaporte" },
 ];
-
-const GATE_LABELS: Record<Gate, string> = {
-  puerta1: "Puerta 1",
-  puerta2: "Puerta 2",
-};
 
 interface Props {
   buildings: VillageBuilding[];
@@ -66,14 +61,13 @@ export default function VillaEdificiosPanel({ buildings }: Props) {
   );
 }
 
-// ── Vista de escáner enfocada en un edificio ──────────────────────────────────
+// ── Vista de escáner por edificio (sin puerta) ────────────────────────────────
 interface ScannerViewProps {
   building: VillageBuilding;
   onBack: () => void;
 }
 
 function BuildingScannerView({ building, onBack }: ScannerViewProps) {
-  const [gate, setGate]                   = useState<Gate>("puerta1");
   const [accreditation, setAccreditation] = useState<Accreditation | null>(null);
   const [entriesToday, setEntriesToday]   = useState<VillageEntry[]>([]);
   const [error, setError]                 = useState<string | null>(null);
@@ -108,14 +102,14 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
     try {
       const res = await registerVillageEntry(
         accreditation.idacreditation,
-        gate,
-        building.idbuilding   // ← siempre fijo al edificio activo
+        null,                  // ← gate null para registros de edificio
+        building.idbuilding
       );
       setEntriesToday((prev) => [
-        { gate, idbuilding: res.idbuilding, scanned_at: res.scannedAt },
+        { gate: null, idbuilding: res.idbuilding, scanned_at: res.scannedAt },
         ...prev,
       ]);
-      setMessage(`Ingreso registrado — ${building.name_es} — ${GATE_LABELS[gate]}`);
+      setMessage(`Ingreso registrado — ${building.name_es}`);
       setAccreditation(null);
     } catch (err: any) {
       setError(err.response?.data?.message || "No se pudo registrar el ingreso");
@@ -141,8 +135,6 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
         </div>
       </div>
 
-     
-
       <QrScannerInput onResult={handleScan} docTypeOptions={DOC_TYPES} />
 
       {error   && <p className="text-red-600 text-sm font-medium">{error}</p>}
@@ -156,7 +148,7 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
             disabled={processing}
             className="w-full bg-black text-white rounded p-3 disabled:opacity-50 text-sm"
           >
-            Registrar ingreso — {building.name_es} — {GATE_LABELS[gate]}
+            Registrar ingreso — {building.name_es}
           </button>
         </>
       )}
@@ -166,7 +158,7 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
           <p className="font-semibold mb-1">Ingresos de hoy en {building.name_es}:</p>
           {entriesToday.map((e, i) => (
             <p key={i}>
-              {GATE_LABELS[e.gate]} — {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
+              {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
             </p>
           ))}
         </div>

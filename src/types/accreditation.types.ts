@@ -39,9 +39,11 @@ export interface MealsLookupResponse {
 export type Gate = "puerta1" | "puerta2";
 
 export interface VillageEntry {
-  gate: Gate;
+  gate: Gate | null;         
+  idbuilding?: string | null;
   scanned_at: string;
 }
+
 
 export interface VillageLookupResponse {
   ok: boolean;
@@ -64,8 +66,3 @@ export interface MobilityLookupResponse {
   logsToday: MobilityLog[];
 }
 
-export interface VillageEntry {
-  gate: Gate;
-  idbuilding?: string | null;
-  scanned_at: string;
-}
