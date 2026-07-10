@@ -1,68 +1,63 @@
 // src/types/accreditation.types.ts
+
 export interface AccreditationPerson {
-  idperson: number;
-  fullname: string;
-  idcountry: string;
-  doctype: string;
+  idperson:    number;
+  fullname:    string;
+  idcountry:   string;
+  doctype:     string;
   doctypeName: string;
-  docnumber: string;
+  docnumber:   string;
 }
 
 export interface AccreditationRole {
-  code: string;
-  name: string;
-}
-
-export interface AccreditationRole {
-  code: string;
-  name: string;
-  color?: string; 
+  code:   string;
+  name:   string;
+  color?: string;
 }
 
 export interface Accreditation {
   idacreditation: number;
-  idevent: number;
-  idsport: number;
-  idinstitution: number;
-  role: AccreditationRole;
-  person: AccreditationPerson;
+  idevent:        number;
+  idsport:        number;
+  idinstitution:  number;
+  hosting:        boolean;
+  role:           AccreditationRole;
+  person:         AccreditationPerson;
 }
 
 export type MealType = "desayuno" | "almuerzo" | "cena";
 
 export interface MealsLookupResponse {
-  ok: boolean;
+  ok:            boolean;
   accreditation: Accreditation;
-  mealsToday: Partial<Record<MealType, string>>;
+  mealsToday:    Partial<Record<MealType, string>>;
 }
 
 export type Gate = "puerta1" | "puerta2";
 
 export interface VillageEntry {
-  gate: Gate | null;         
+  gate:        Gate | null;
   idbuilding?: string | null;
-  scanned_at: string;
+  scanned_at:  string;
 }
-
 
 export interface VillageLookupResponse {
-  ok: boolean;
+  ok:            boolean;
   accreditation: Accreditation;
-  entriesToday: VillageEntry[];
+  entriesToday:  VillageEntry[];
 }
 
-export type MobilityLocation = "videna" | "villa_panamericana";
+export type MobilityLocation  = "videna" | "villa_panamericana";
 export type MobilityEventType = "salida" | "llegada";
 
 export interface MobilityLog {
-  location: MobilityLocation;
+  location:   MobilityLocation;
   event_type: MobilityEventType;
   scanned_at: string;
 }
 
 export interface MobilityLookupResponse {
-  ok: boolean;
+  ok:            boolean;
   accreditation: Accreditation;
-  logsToday: MobilityLog[];
+  logsToday:     MobilityLog[];
 }
-

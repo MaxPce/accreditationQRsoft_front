@@ -26,13 +26,13 @@ interface Props {
 }
 
 export default function VillaScannerPanel({ buildings }: Props) {
-  const [gate, setGate]                     = useState<Gate>("puerta1");
+  const [gate, setGate]                         = useState<Gate>("puerta1");
   const [selectedBuilding, setSelectedBuilding] = useState<string>("");
-  const [accreditation, setAccreditation]   = useState<Accreditation | null>(null);
-  const [entriesToday, setEntriesToday]     = useState<VillageEntry[]>([]);
-  const [error, setError]                   = useState<string | null>(null);
-  const [message, setMessage]               = useState<string | null>(null);
-  const [processing, setProcessing]         = useState(false);
+  const [accreditation, setAccreditation]       = useState<Accreditation | null>(null);
+  const [entriesToday, setEntriesToday]         = useState<VillageEntry[]>([]);
+  const [error, setError]                       = useState<string | null>(null);
+  const [message, setMessage]                   = useState<string | null>(null);
+  const [processing, setProcessing]             = useState(false);
 
   const resetScan = () => {
     setAccreditation(null);
@@ -92,6 +92,7 @@ export default function VillaScannerPanel({ buildings }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
+
       {/* Selector de puerta */}
       <div>
         <label className="block text-sm font-medium mb-1">Puerta</label>
@@ -110,24 +111,7 @@ export default function VillaScannerPanel({ buildings }: Props) {
         </div>
       </div>
 
-      {/* Selector de edificio (opcional) */}
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          Edificio <span className="text-gray-400 font-normal">(opcional)</span>
-        </label>
-        <select
-          className="w-full border rounded p-2 bg-white text-sm"
-          value={selectedBuilding}
-          onChange={(e) => { setSelectedBuilding(e.target.value); resetScan(); }}
-        >
-          <option value="">Sin filtro de edificio</option>
-          {buildings.map((b) => (
-            <option key={b.idbuilding} value={b.idbuilding}>
-              {b.name_es}
-            </option>
-          ))}
-        </select>
-      </div>
+      
 
       <QrScannerInput onResult={handleScan} docTypeOptions={DOC_TYPES} />
 
@@ -137,6 +121,22 @@ export default function VillaScannerPanel({ buildings }: Props) {
       {accreditation && (
         <>
           <AccreditationCard accreditation={accreditation} />
+
+          {/* Badge informativo de hospedaje */}
+          {accreditation.hosting ? (
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-300
+                            rounded-lg px-3 py-2 text-sm text-blue-700">
+              <span>🏨</span>
+              <span className="font-medium">Acreditado con hospedaje en villa</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-green-50 border border-green-300
+                            rounded-lg px-3 py-2 text-sm text-green-700">
+              <span>🏠</span>
+              <span className="font-medium">Solo acceso a villa</span>
+            </div>
+          )}
+
           <button
             onClick={handleRegister}
             disabled={processing}
@@ -152,13 +152,14 @@ export default function VillaScannerPanel({ buildings }: Props) {
               <p className="font-semibold mb-1">Ingresos de hoy:</p>
               {entriesToday.map((e, i) => (
                 <p key={i}>
-                    {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
+                  {new Date(e.scanned_at).toLocaleTimeString("es-PE")}
                 </p>
-                ))}
+              ))}
             </div>
           )}
         </>
       )}
+
     </div>
   );
 }

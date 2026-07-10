@@ -1,23 +1,25 @@
 // src/api/village.api.ts
 import api from "./axios";
-import type { Gate, VillageLookupResponse } from "../types/accreditation.types";
+import type {
+  Gate,
+  VillageLookupResponse,
+} from "../types/accreditation.types";
 
 export interface VillageBuilding {
   idbuilding: string;
-  name_es: string;
-  name_en: string;
+  name_es:    string;
+  name_en:    string;
 }
 
 export interface BuildingCountry {
-  id: number;
-  idcountry: string;       
-  country_name: string;    
+  id:           number;
+  idcountry:    string;
+  country_name: string;
 }
 
-
 export interface CountryOption {
-  idcountry: string;       
-  name: string;            
+  idcountry: string;
+  name:      string;
 }
 
 export interface VillageHistoryRecord {
@@ -34,28 +36,35 @@ export interface VillageHistoryRecord {
   country_name: string | null;
 }
 
-
-export async function lookupVillageByQr(qr: string): Promise<VillageLookupResponse> {
-  const { data } = await api.get("/village/lookup", { params: { qr } });
+export async function lookupVillageByQr(
+  qr: string,
+  idbuilding?: string
+): Promise<VillageLookupResponse> {
+  const { data } = await api.get("/village/lookup", {
+    params: { qr, ...(idbuilding ? { idbuilding } : {}) },
+  });
   return data;
 }
 
 export async function lookupVillageByDocument(
   doctype: string,
-  docnumber: string
+  docnumber: string,
+  idbuilding?: string
 ): Promise<VillageLookupResponse> {
-  const { data } = await api.get("/village/lookup", { params: { doctype, docnumber } });
+  const { data } = await api.get("/village/lookup", {
+    params: { doctype, docnumber, ...(idbuilding ? { idbuilding } : {}) },
+  });
   return data;
 }
 
 export async function registerVillageEntry(
   idacreditation: number,
-  gate: Gate | null,        
+  gate: Gate | null,
   idbuilding?: string
 ) {
   const { data } = await api.post("/village/register", {
     idacreditation,
-    gate,                   
+    gate,
     ...(idbuilding ? { idbuilding } : {}),
   });
   return data;
@@ -82,7 +91,7 @@ export async function removeCountryFromBuilding(idbuilding: string, idcountry: s
 }
 
 export async function listAllCountries(): Promise<CountryOption[]> {
-  const { data } = await api.get("/village/countries"); 
+  const { data } = await api.get("/village/countries");
   return data.countries;
 }
 

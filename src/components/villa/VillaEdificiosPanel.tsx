@@ -61,7 +61,7 @@ export default function VillaEdificiosPanel({ buildings }: Props) {
   );
 }
 
-// ── Vista de escáner por edificio (sin puerta) ────────────────────────────────
+// ── Vista de escáner por edificio ─────────────────────────────────────────────
 interface ScannerViewProps {
   building: VillageBuilding;
   onBack: () => void;
@@ -79,21 +79,21 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
     qr?: string;
     doctype?: string;
     docnumber?: string;
-  }) => {
+    }) => {
     setError(null);
     setMessage(null);
     setAccreditation(null);
     try {
-      const res =
+        const res =
         value.type === "qr"
-          ? await lookupVillageByQr(value.qr!)
-          : await lookupVillageByDocument(value.doctype!, value.docnumber!);
-      setAccreditation(res.accreditation);
-      setEntriesToday(res.entriesToday);
+            ? await lookupVillageByQr(value.qr!, building.idbuilding)           
+            : await lookupVillageByDocument(value.doctype!, value.docnumber!, building.idbuilding); 
+        setAccreditation(res.accreditation);
+        setEntriesToday(res.entriesToday); 
     } catch (err: any) {
-      setError(err.response?.data?.message || "Acreditación no encontrada");
+        setError(err.response?.data?.message || "Acreditación no encontrada");
     }
-  };
+    };
 
   const handleRegister = async () => {
     if (!accreditation) return;
@@ -102,7 +102,7 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
     try {
       const res = await registerVillageEntry(
         accreditation.idacreditation,
-        null,                  // ← gate null para registros de edificio
+        null,
         building.idbuilding
       );
       setEntriesToday((prev) => [
@@ -143,13 +143,29 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
       {accreditation && (
         <>
           <AccreditationCard accreditation={accreditation} />
-          <button
-            onClick={handleRegister}
-            disabled={processing}
-            className="w-full bg-black text-white rounded p-3 disabled:opacity-50 text-sm"
-          >
-            Registrar ingreso — {building.name_es}
-          </button>
+
+          {accreditation.hosting ? (
+            // ── hosting = 1: botón de registro habilitado ──────────────────
+            <button
+              onClick={handleRegister}
+              disabled={processing}
+              className="w-full bg-black text-white rounded p-3 disabled:opacity-50 text-sm"
+            >
+              Registrar ingreso — {building.name_es}
+            </button>
+          ) : (
+            // ── hosting = 0: bloqueo visual, sin botón de registro ─────────
+            <div className="rounded-xl bg-red-50 border-2 border-red-500 p-4
+                            flex flex-col items-center gap-1 text-center">
+              <span className="text-3xl">🚫</span>
+              <p className="text-red-700 font-bold text-sm uppercase tracking-wide">
+                Sin permiso de hospedaje
+              </p>
+              <p className="text-red-500 text-xs">
+                Este acreditado no puede registrarse en edificios de la villa
+              </p>
+            </div>
+          )}
         </>
       )}
 
@@ -163,6 +179,7 @@ function BuildingScannerView({ building, onBack }: ScannerViewProps) {
           ))}
         </div>
       )}
+
     </div>
   );
 }
