@@ -85,12 +85,17 @@ export default function CompetenciaPage() {
   const [historialSport, setHistorialSport] = useState<string>("");
   const [availableTests, setAvailableTests] = useState<CompetitionTest_Param[]>([]);
 
+  // ── NUEVO: estado para la prueba seleccionada en el escáner ──
+  const [selectedParam, setSelectedParam] = useState<string>("");
+  const [scannerTests, setScannerTests]   = useState<CompetitionTest_Param[]>([]);
+
   useEffect(() => {
     listCompetitionSports()
       .then(setSports)
       .catch(() => setError("No se pudieron cargar los deportes"));
   }, []);
 
+  // Historial: cargar pruebas al cambiar deporte
   useEffect(() => {
     if (!historialSport) {
       setAvailableTests([]);
@@ -101,6 +106,18 @@ export default function CompetenciaPage() {
       .then(setAvailableTests)
       .catch(() => setAvailableTests([]));
   }, [historialSport]);
+
+  // ── NUEVO: Escáner: cargar pruebas al cambiar deporte seleccionado ──
+  useEffect(() => {
+    if (!selectedSport) {
+      setScannerTests([]);
+      setSelectedParam("");
+      return;
+    }
+    listCompetitionTests(String(selectedSport))
+      .then(setScannerTests)
+      .catch(() => setScannerTests([]));
+  }, [selectedSport]);
 
   const handleScan = async (value: {
     type: "qr" | "manual";
@@ -116,10 +133,12 @@ export default function CompetenciaPage() {
     setResult(null);
     setLoading(true);
     try {
+      // ── MODIFICADO: pasar selectedParam opcionalmente ──
+      const paramCode = selectedParam || undefined;
       const res =
         value.type === "qr"
-          ? await validateCompetitionByQr(value.qr!, selectedSport)
-          : await validateCompetitionByDocument(value.doctype!, value.docnumber!, selectedSport);
+          ? await validateCompetitionByQr(value.qr!, selectedSport, paramCode)
+          : await validateCompetitionByDocument(value.doctype!, value.docnumber!, selectedSport, paramCode);
       setResult(res);
     } catch (err: any) {
       setError(err.response?.data?.message || "Acreditación no encontrada");
@@ -191,6 +210,7 @@ export default function CompetenciaPage() {
 
       {tab === "scanner" && (
         <>
+          {/* Selector de deporte */}
           <div>
             <label className="block text-sm font-medium mb-1">Deporte</label>
             <select
@@ -200,6 +220,7 @@ export default function CompetenciaPage() {
                 setSelectedSport(Number(e.target.value));
                 setResult(null);
                 setError(null);
+                setSelectedParam(""); // limpiar prueba al cambiar deporte
               }}
             >
               <option value="" disabled>Selecciona un deporte...</option>
@@ -210,6 +231,32 @@ export default function CompetenciaPage() {
               ))}
             </select>
           </div>
+
+          {/* ── NUEVO: Selector de prueba/categoría (opcional) ── */}
+          {scannerTests.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Prueba / Categoría{" "}
+                <span className="text-gray-400 font-normal">(opcional)</span>
+              </label>
+              <select
+                className="w-full border rounded p-2 bg-white"
+                value={selectedParam}
+                onChange={(e) => {
+                  setSelectedParam(e.target.value);
+                  setResult(null);
+                  setError(null);
+                }}
+              >
+                <option value="">Todas las pruebas</option>
+                {scannerTests.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <QrScannerInput onResult={handleScan} docTypeOptions={DOC_TYPES} />
 

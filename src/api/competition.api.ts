@@ -51,22 +51,24 @@ export async function listCompetitionSports(): Promise<Sport[]> {
 
 export async function validateCompetitionByQr(
   qr: string,
-  idsport: number
+  idsport: number,
+  idsport_param?: string   
 ): Promise<CompetitionValidationResponse> {
-  const { data } = await api.get("/competition/validate", {
-    params: { qr, idsport },
-  });
+  const params: Record<string, unknown> = { qr, idsport };
+  if (idsport_param) params.idsport_param = idsport_param;
+  const { data } = await api.get("/competition/validate", { params });
   return data;
 }
 
 export async function validateCompetitionByDocument(
   doctype: string,
   docnumber: string,
-  idsport: number
+  idsport: number,
+  idsport_param?: string
 ): Promise<CompetitionValidationResponse> {
-  const { data } = await api.get("/competition/validate-doc", {
-    params: { doctype, docnumber, idsport },
-  });
+  const params: Record<string, unknown> = { doctype, docnumber, idsport };
+  if (idsport_param) params.idsport_param = idsport_param;
+  const { data } = await api.get("/competition/validate-doc", { params });
   return data;
 }
 
