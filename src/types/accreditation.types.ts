@@ -13,6 +13,12 @@ export interface AccreditationRole {
   name: string;
 }
 
+export interface AccreditationRole {
+  code: string;
+  name: string;
+  color?: string; 
+}
+
 export interface Accreditation {
   idacreditation: number;
   idevent: number;
@@ -57,3 +63,4 @@ export interface MobilityLookupResponse {
   accreditation: Accreditation;
   logsToday: MobilityLog[];
 }
+
