@@ -7,6 +7,7 @@ export interface AccreditationPerson {
   doctype:     string;
   doctypeName: string;
   docnumber:   string;
+  photoUrl:    string | null;
 }
 
 export interface AccreditationRole {
