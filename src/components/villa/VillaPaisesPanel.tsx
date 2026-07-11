@@ -70,7 +70,7 @@ export default function VillaPaisesPanel({ buildings }: Props) {
     <div className="flex flex-col gap-4">
       <p className="text-sm text-gray-500">
         Asigna los países que tienen acceso a cada edificio. Solo ingresará si el
-        país del atleta está asignado al edificio seleccionado.
+        país del acreditado está asignado al edificio seleccionado.
       </p>
 
       <div>

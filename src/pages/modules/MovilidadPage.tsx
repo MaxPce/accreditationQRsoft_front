@@ -7,6 +7,7 @@ import {
   lookupMobilityByDocument,
   registerMobilityLog,
   getMobilityHistory,
+  softDeleteMobilityLog,
 } from "../../api/mobility.api";
 import type { MobilityHistoryRecord } from "../../api/mobility.api";
 import type {
@@ -39,29 +40,39 @@ const EVENT_TYPE_COLORS: Record<MobilityEventType, string> = {
 
 const EMPTY_MOBILITY_FILTERS = { docnumber: "", location: "", date: "" };
 
-const renderMobilityRow = (r: MobilityHistoryRecord, i: number) => (
-  <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
-    <div className="flex justify-between items-start">
-      <p className="font-semibold">{r.person.fullname}</p>
-      <span
-        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          r.event_type === "salida"
-            ? "bg-blue-100 text-blue-700"
-            : "bg-green-100 text-green-700"
-        }`}
-      >
-        {r.event_type === "salida" ? "Salida" : "Llegada"}
-      </span>
+const makeMobilityRow = (onDelete: (id: number) => void) =>
+  (r: MobilityHistoryRecord, i: number) => (
+    <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
+      <div className="flex justify-between items-start">
+        <p className="font-semibold">{r.person.fullname}</p>
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              r.event_type === "salida"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-green-100 text-green-700"
+            }`}
+          >
+            {r.event_type === "salida" ? "Salida" : "Llegada"}
+          </span>
+          <button
+            onClick={() => onDelete(r.id)}
+            title="Eliminar registro"
+            className="text-red-400 hover:text-red-600 text-xs px-1"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+      <p className="text-gray-500">
+        {r.person.doctypeName}: {r.person.docnumber}
+      </p>
+      <p className="text-gray-400 text-xs">
+        {r.location === "videna" ? "Videna" : "Villa Panamericana"} —{" "}
+        {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
+      </p>
     </div>
-    <p className="text-gray-500">
-      {r.person.doctypeName}: {r.person.docnumber}
-    </p>
-    <p className="text-gray-400 text-xs">
-      {r.location === "videna" ? "Videna" : "Villa Panamericana"} —{" "}
-      {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
-    </p>
-  </div>
-);
+  );
 
 export default function MovilidadPage() {
   const [tab, setTab]                       = useState<"scanner" | "historial">("scanner");
@@ -73,6 +84,7 @@ export default function MovilidadPage() {
   const [message, setMessage]               = useState<string | null>(null);
   const [processing, setProcessing]         = useState(false);
   const [mobilityFilters, setMobilityFilters] = useState({ docnumber: "", location: "", date: "" });
+  const [historyKey, setHistoryKey] = useState(0);
 
   const handleScan = async (value: {
     type: "qr" | "manual";
@@ -94,6 +106,17 @@ export default function MovilidadPage() {
       setError(err.response?.data?.message || "Acreditación no encontrada");
     }
   };
+
+  const handleDeleteMobility = async (id: number) => {
+    if (!confirm("¿Eliminar este registro del historial? Quedará guardado quién y cuándo lo eliminó.")) return;
+    try {
+      await softDeleteMobilityLog(id);
+      setHistoryKey((k) => k + 1);
+    } catch {
+      alert("No se pudo eliminar el registro");
+    }
+  };
+
 
   const handleRegister = async () => {
     if (!accreditation) return;
@@ -120,6 +143,7 @@ export default function MovilidadPage() {
 
   const MobilityHistorySection = () => (
     <HistoryPanel
+      key={historyKey}
       fetchFn={getMobilityHistory}
       filters={mobilityFilters}
       onClearFilters={() => setMobilityFilters(EMPTY_MOBILITY_FILTERS)}
@@ -152,7 +176,7 @@ export default function MovilidadPage() {
           </div>
         </div>
       }
-      renderRow={renderMobilityRow}
+      renderRow={makeMobilityRow(handleDeleteMobility)}
     />
   );
 

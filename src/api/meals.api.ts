@@ -21,6 +21,7 @@ export async function checkMeal(idacreditation: number, mealType: MealType) {
 }
 
 export interface MealHistoryRecord {
+  id:             number;
   idacreditation: number;
   meal_type:      string;
   meal_date:      string;
@@ -34,4 +35,7 @@ export async function getMealsHistory(
 ): Promise<MealHistoryRecord[]> {
   const { data } = await api.get("/meals/history", { params: filters });
   return data.records;
+}
+export async function softDeleteMeal(id: number): Promise<void> {
+  await api.delete(`/meals/history/${id}`);
 }

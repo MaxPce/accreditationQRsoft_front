@@ -25,6 +25,7 @@ export async function registerMobilityLog(
 }
 
 export interface MobilityHistoryRecord {
+  id:             number;
   idacreditation: number;
   location:       string;
   event_type:     string;
@@ -38,4 +39,7 @@ export async function getMobilityHistory(
 ): Promise<MobilityHistoryRecord[]> {
   const { data } = await api.get("/mobility/history", { params: filters });
   return data.records;
+}
+export async function softDeleteMobilityLog(id: number): Promise<void> {
+  await api.delete(`/mobility/history/${id}`);
 }

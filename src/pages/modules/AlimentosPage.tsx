@@ -2,7 +2,7 @@ import { useState } from "react";
 import QrScannerInput from "../../components/QrScannerInput";
 import AccreditationCard from "../../components/AccreditationCard";
 import HistoryPanel from "../../components/HistoryPanel";
-import { lookupMealsByQr, lookupMealsByDocument, checkMeal, getMealsHistory } from "../../api/meals.api";
+import { lookupMealsByQr, lookupMealsByDocument, checkMeal, getMealsHistory, softDeleteMeal } from "../../api/meals.api";
 import type { MealHistoryRecord } from "../../api/meals.api";
 import type { Accreditation, MealType } from "../../types/accreditation.types";
 
@@ -55,30 +55,40 @@ const TabBar = ({
   </div>
 );
 
-const renderMealRow = (r: MealHistoryRecord, i: number) => (
-  <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
-    <div className="flex justify-between items-start">
-      <p className="font-semibold">{r.person.fullname}</p>
-      <span
-        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          r.meal_type === "desayuno"
-            ? "bg-orange-100 text-orange-700"
-            : r.meal_type === "almuerzo"
-            ? "bg-yellow-100 text-yellow-700"
-            : "bg-indigo-100 text-indigo-700"
-        }`}
-      >
-        {r.meal_type.charAt(0).toUpperCase() + r.meal_type.slice(1)}
-      </span>
+const makeMealRow = (onDelete: (id: number) => void) =>
+  (r: MealHistoryRecord, i: number) => (
+    <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
+      <div className="flex justify-between items-start">
+        <p className="font-semibold">{r.person.fullname}</p>
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              r.meal_type === "desayuno"
+                ? "bg-orange-100 text-orange-700"
+                : r.meal_type === "almuerzo"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-indigo-100 text-indigo-700"
+            }`}
+          >
+            {r.meal_type.charAt(0).toUpperCase() + r.meal_type.slice(1)}
+          </span>
+          <button
+            onClick={() => onDelete(r.id)}
+            title="Eliminar registro"
+            className="text-red-400 hover:text-red-600 text-xs px-1"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+      <p className="text-gray-500">
+        {r.person.doctypeName}: {r.person.docnumber}
+      </p>
+      <p className="text-gray-400 text-xs">
+        {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
+      </p>
     </div>
-    <p className="text-gray-500">
-      {r.person.doctypeName}: {r.person.docnumber}
-    </p>
-    <p className="text-gray-400 text-xs">
-      {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
-    </p>
-  </div>
-);
+  );
 
 export default function AlimentosPage() {
   const [step, setStep]                 = useState<Step>("select_meal");
@@ -90,6 +100,8 @@ export default function AlimentosPage() {
   const [scanSession, setScanSession]   = useState(0);
   const [tab, setTab]                   = useState<"scanner" | "historial">("scanner");
   const [mealFilters, setMealFilters]   = useState({ docnumber: "", meal_type: "", date: "" });
+  const [historyKey, setHistoryKey] = useState(0);
+
 
   const currentMeal = MEAL_OPTIONS.find((m) => m.type === selectedMeal);
 
@@ -100,6 +112,17 @@ export default function AlimentosPage() {
     setMessage(null);
     setStep("scanning");
   };
+
+  const handleDeleteMeal = async (id: number) => {
+    if (!confirm("¿Eliminar este registro del historial? Quedará guardado quién y cuándo lo eliminó.")) return;
+    try {
+      await softDeleteMeal(id);
+      setHistoryKey((k) => k + 1);
+    } catch {
+      alert("No se pudo eliminar el registro");
+    }
+  };
+
 
   const handleScan = async (value: {
     type: "qr" | "manual";
@@ -185,6 +208,7 @@ export default function AlimentosPage() {
 
   const MealHistorySection = () => (
     <HistoryPanel
+      key={historyKey}
       fetchFn={getMealsHistory}
       filters={mealFilters}
       onClearFilters={() => setMealFilters(EMPTY_MEAL_FILTERS)}
@@ -218,7 +242,7 @@ export default function AlimentosPage() {
           </div>
         </div>
       }
-      renderRow={renderMealRow}
+      renderRow={makeMealRow(handleDeleteMeal)}
     />
   );
 
