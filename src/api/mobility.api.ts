@@ -30,7 +30,12 @@ export interface MobilityHistoryRecord {
   location:       string;
   event_type:     string;
   scanned_at:     string;
-  person: { fullname: string; docnumber: string; doctypeName: string };
+  person: {
+    fullname:    string;
+    docnumber:   string;
+    doctypeName: string;
+    photoUrl:    string | null;  
+  };
   role:   { code: string; name: string };
 }
 

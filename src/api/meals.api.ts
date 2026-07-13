@@ -26,7 +26,7 @@ export interface MealHistoryRecord {
   meal_type:      string;
   meal_date:      string;
   scanned_at:     string;
-  person: { fullname: string; docnumber: string; doctypeName: string };
+  person: { fullname: string; docnumber: string; doctypeName: string; photoUrl:    string | null; };
   role:   { code: string; name: string };
 }
 

@@ -31,6 +31,7 @@ export interface VillageHistoryRecord {
   person: {
     fullname:  string;
     docnumber: string;
+    photoUrl:  string | null;
   };
   role:         { code: string; name: string };
   country_name: string | null;

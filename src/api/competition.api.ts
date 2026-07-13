@@ -36,6 +36,7 @@ export interface CompetitionHistoryRecord {
     fullname:    string;
     docnumber:   string;
     doctypeName: string;
+    photoUrl:    string | null;
   };
   role: { code: string; name: string };
 }

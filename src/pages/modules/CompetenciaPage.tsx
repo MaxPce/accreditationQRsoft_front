@@ -54,25 +54,45 @@ const TabBar = ({
   </div>
 );
 
-const renderCompetitionRow = (r: CompetitionHistoryRecord, i: number) => (
-  <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
-    <div className="flex justify-between items-start">
-      <p className="font-semibold">{r.person.fullname}</p>
-      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700">
-        {r.sport_acronym}
-      </span>
+function CompetitionHistoryRow({ r }: { r: CompetitionHistoryRecord }) {
+  const [imgErr, setImgErr] = useState(false);
+  const showPhoto = !!r.person.photoUrl && !imgErr;
+
+  return (
+    <div className="border rounded p-3 text-sm flex flex-col gap-1">
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex items-center gap-2">
+          {showPhoto ? (
+            <img
+              src={r.person.photoUrl!}
+              alt={r.person.fullname}
+              onError={() => setImgErr(true)}
+              className="w-10 h-10 rounded-full object-cover border shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm shrink-0">
+              {r.person.fullname.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <p className="font-semibold">{r.person.fullname}</p>
+        </div>
+        <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700 shrink-0">
+          {r.sport_acronym}
+        </span>
+      </div>
+      <p className="text-gray-500">
+        {r.person.doctypeName}: {r.person.docnumber}
+      </p>
+      <p className="text-gray-400 text-xs">
+        {r.test_name ?? "Solo deporte"}
+      </p>
+      <p className="text-gray-400 text-xs">
+        {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
+      </p>
     </div>
-    <p className="text-gray-500">
-      {r.person.doctypeName}: {r.person.docnumber}
-    </p>
-    <p className="text-gray-400 text-xs">
-      {r.test_name ?? "Solo deporte"}
-    </p>
-    <p className="text-gray-400 text-xs">
-      {new Date(r.scanned_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
-    </p>
-  </div>
-);
+  );
+}
+
 
 export default function CompetenciaPage() {
   const [sports, setSports]               = useState<Sport[]>([]);
@@ -199,7 +219,7 @@ export default function CompetenciaPage() {
           </div>
         </div>
       }
-      renderRow={renderCompetitionRow}
+      renderRow={(r, i) => <CompetitionHistoryRow key={i} r={r} />}
     />
   );
 

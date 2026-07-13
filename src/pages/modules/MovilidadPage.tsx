@@ -40,12 +40,35 @@ const EVENT_TYPE_COLORS: Record<MobilityEventType, string> = {
 
 const EMPTY_MOBILITY_FILTERS = { docnumber: "", location: "", date: "" };
 
-const makeMobilityRow = (onDelete: (id: number) => void) =>
-  (r: MobilityHistoryRecord, i: number) => (
-    <div key={i} className="border rounded p-3 text-sm flex flex-col gap-1">
-      <div className="flex justify-between items-start">
-        <p className="font-semibold">{r.person.fullname}</p>
+function MobilityHistoryRow({
+  r,
+  onDelete,
+}: {
+  r: MobilityHistoryRecord;
+  onDelete: (id: number) => void;
+}) {
+  const [imgErr, setImgErr] = useState(false);
+  const showPhoto = !!r.person.photoUrl && !imgErr;
+
+  return (
+    <div className="border rounded p-3 text-sm flex flex-col gap-1">
+      <div className="flex justify-between items-start gap-2">
         <div className="flex items-center gap-2">
+          {showPhoto ? (
+            <img
+              src={r.person.photoUrl!}
+              alt={r.person.fullname}
+              onError={() => setImgErr(true)}
+              className="w-10 h-10 rounded-full object-cover border shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm shrink-0">
+              {r.person.fullname.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <p className="font-semibold">{r.person.fullname}</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
           <span
             className={`text-xs px-2 py-0.5 rounded-full font-medium ${
               r.event_type === "salida"
@@ -73,6 +96,8 @@ const makeMobilityRow = (onDelete: (id: number) => void) =>
       </p>
     </div>
   );
+}
+
 
 export default function MovilidadPage() {
   const [tab, setTab]                       = useState<"scanner" | "historial">("scanner");
@@ -176,7 +201,9 @@ export default function MovilidadPage() {
           </div>
         </div>
       }
-      renderRow={makeMobilityRow(handleDeleteMobility)}
+      renderRow={(r, i) => (
+        <MobilityHistoryRow key={i} r={r} onDelete={handleDeleteMobility} />
+      )}
     />
   );
 

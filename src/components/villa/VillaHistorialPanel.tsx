@@ -12,6 +12,71 @@ interface Props {
   buildings: VillageBuilding[];
 }
 
+// ── Sub-componente para cada fila del historial ──────────────────────────────
+function VillageHistoryRow({ r }: { r: VillageHistoryRecord }) {
+  const [imgErr, setImgErr] = useState(false);
+  const showPhoto = !!r.person.photoUrl && !imgErr;
+
+  return (
+    <div className="border rounded px-3 py-3 flex flex-col gap-1 text-sm">
+      {/* Foto + nombre + hora */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {showPhoto ? (
+            <img
+              src={r.person.photoUrl!}
+              alt={r.person.fullname}
+              onError={() => setImgErr(true)}
+              className="w-10 h-10 rounded-full object-cover border shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm shrink-0">
+              {r.person.fullname.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="font-semibold">{r.person.fullname}</span>
+        </div>
+        <div className="text-xs text-gray-400 shrink-0 text-right leading-tight">
+          <p>
+            {new Date(r.scanned_at).toLocaleDateString("es-PE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+          <p>
+            {new Date(r.scanned_at).toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* Doc / País / Rol */}
+      <div className="text-xs text-gray-500 flex flex-wrap gap-x-3 gap-y-0.5">
+        <span>Doc: {r.person.docnumber}</span>
+        {r.country_name && <span>🌎 {r.country_name}</span>}
+        {r.role?.name   && <span>🎫 {r.role.name}</span>}
+      </div>
+
+      {/* Edificio / Puerta */}
+      <div className="text-xs flex gap-2 mt-0.5">
+        {r.building_name && (
+          <span className="bg-gray-100 rounded px-2 py-0.5">🏢 {r.building_name}</span>
+        )}
+        {r.gate && (
+          <span className="bg-gray-100 rounded px-2 py-0.5">🚪 {GATE_LABELS[r.gate] ?? r.gate}</span>
+        )}
+        {!r.gate && !r.building_name && (
+          <span className="text-gray-300 italic">Sin detalle</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Componente principal ─────────────────────────────────────────────────────
 export default function VillaHistorialPanel({ buildings }: Props) {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -35,29 +100,29 @@ export default function VillaHistorialPanel({ buildings }: Props) {
       <div>
         <label className="block text-xs text-gray-500 mb-1">Fecha</label>
         <input
-            type="date"
-            value={filters.date}
-            onChange={set("date")}
-            className="w-full border rounded p-2 text-sm bg-white"
-            />
+          type="date"
+          value={filters.date}
+          onChange={set("date")}
+          className="w-full border rounded p-2 text-sm bg-white"
+        />
       </div>
 
       {/* Edificio */}
       <div>
         <label className="block text-xs text-gray-500 mb-1">Edificio</label>
         <select
-            value={filters.idbuilding}
-            onChange={set("idbuilding")}
-            className="w-full border rounded p-2 text-sm bg-white"
-            >
-            <option value="">Todos</option>
-            <option value="__null__">Sin edificio</option>   {/* ← añadir */}
-            {buildings.map((b) => (
-                <option key={b.idbuilding} value={b.idbuilding}>
-                {b.name_es}
-                </option>
-            ))}
-            </select>
+          value={filters.idbuilding}
+          onChange={set("idbuilding")}
+          className="w-full border rounded p-2 text-sm bg-white"
+        >
+          <option value="">Todos</option>
+          <option value="__null__">Sin edificio</option>
+          {buildings.map((b) => (
+            <option key={b.idbuilding} value={b.idbuilding}>
+              {b.name_es}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Puerta */}
@@ -90,30 +155,7 @@ export default function VillaHistorialPanel({ buildings }: Props) {
   );
 
   const renderRow = (r: VillageHistoryRecord, i: number) => (
-    <div key={i} className="border rounded px-3 py-3 flex flex-col gap-1 text-sm">
-      <div className="flex items-center justify-between">
-        <span className="font-semibold">{r.person.fullname}</span>
-        <span className="text-xs text-gray-400">
-          {new Date(r.scanned_at).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" })}
-        </span>
-      </div>
-      <div className="text-xs text-gray-500 flex flex-wrap gap-x-3 gap-y-0.5">
-        <span>Doc: {r.person.docnumber}</span>
-        {r.country_name && <span>🌎 {r.country_name}</span>}
-        {r.role?.name   && <span>🎫 {r.role.name}</span>}
-      </div>
-      <div className="text-xs flex gap-2 mt-0.5">
-        {r.building_name && (
-          <span className="bg-gray-100 rounded px-2 py-0.5">🏢 {r.building_name}</span>
-        )}
-        {r.gate && (
-          <span className="bg-gray-100 rounded px-2 py-0.5">🚪 {GATE_LABELS[r.gate] ?? r.gate}</span>
-        )}
-        {!r.gate && !r.building_name && (
-          <span className="text-gray-300 italic">Sin detalle</span>
-        )}
-      </div>
-    </div>
+    <VillageHistoryRow key={i} r={r} />
   );
 
   return (
