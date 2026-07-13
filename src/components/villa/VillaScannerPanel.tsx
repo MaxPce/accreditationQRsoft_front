@@ -27,19 +27,14 @@ interface Props {
 
 export default function VillaScannerPanel({ buildings }: Props) {
   const [gate, setGate]                         = useState<Gate>("puerta1");
-  const [selectedBuilding, setSelectedBuilding] = useState<string>("");
+  const [selectedBuilding] = useState<string>("");
   const [accreditation, setAccreditation]       = useState<Accreditation | null>(null);
   const [entriesToday, setEntriesToday]         = useState<VillageEntry[]>([]);
   const [error, setError]                       = useState<string | null>(null);
   const [message, setMessage]                   = useState<string | null>(null);
   const [processing, setProcessing]             = useState(false);
 
-  const resetScan = () => {
-    setAccreditation(null);
-    setError(null);
-    setMessage(null);
-    setEntriesToday([]);
-  };
+  
 
   const handleScan = async (value: {
     type: "qr" | "manual";
