@@ -4,5 +4,5 @@ import type { EventItem } from "../types/auth.types";
 
 export async function fetchEvents(): Promise<EventItem[]> {
   const { data } = await api.get("/events");
-  return data.events;
+  return Array.isArray(data.events) ? data.events : Array.isArray(data) ? data : [];
 }
